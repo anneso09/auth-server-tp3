@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox spacing="10" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.authclient.HelloController">
+    <padding>
+        <Insets bottom="20" left="20" right="20" top="20"/>
+    </padding>
+
+    <Label text="Serveur d'Authentification TP2" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+
+    <Label text="Email :"/>
+    <TextField fx:id="emailField" promptText="email@exemple.com"/>
+
+    <Label text="Mot de passe :"/>
+    <PasswordField fx:id="passwordField" promptText="Mot de passe (12 car. min)"/>
+
+    <!-- Indicateur de force -->
+    <Label fx:id="strengthLabel" text="Force du mot de passe : " style="-fx-font-weight: bold;"/>
+
+    <!-- Confirmation uniquement pour l'inscription -->
+    <Label text="Confirmer le mot de passe :"/>
+    <PasswordField fx:id="passwordConfirmField" promptText="Confirmer le mot de passe"/>
+
+    <HBox spacing="10">
+        <Button text="S'inscrire" onAction="#onRegister"/>
+        <Button text="Se connecter" onAction="#onLogin"/>
+    </HBox>
+
+    <Label text="Token :"/>
+    <TextField fx:id="tokenField" promptText="Token reçu après connexion" editable="false"/>
+
+    <Button text="Accéder à /api/me" onAction="#onMe"/>
+
+    <Label fx:id="resultLabel" style="-fx-font-size: 13;" wrapText="true"/>
+</VBox>

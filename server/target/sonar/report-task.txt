@@ -1,0 +1,7 @@
+organization=anneso09-1
+projectKey=anneso09_auth-server-tp2
+serverUrl=https://sonarcloud.io
+serverVersion=8.0.0.84103
+dashboardUrl=https://sonarcloud.io/dashboard?id=anneso09_auth-server-tp2
+ceTaskId=AZ0v6rw0esq4Fh5Q3ldc
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AZ0v6rw0esq4Fh5Q3ldc

@@ -1,0 +1,11 @@
+C:\Users\annes\OneDrive\Desktop\BachelorYear\SamfatWork\TP March\auth-server-tp2\server\src\main\java\com\example\auth\AuthApplication.java
+C:\Users\annes\OneDrive\Desktop\BachelorYear\SamfatWork\TP March\auth-server-tp2\server\src\main\java\com\example\auth\config\SecurityConfig.java
+C:\Users\annes\OneDrive\Desktop\BachelorYear\SamfatWork\TP March\auth-server-tp2\server\src\main\java\com\example\auth\controller\AuthController.java
+C:\Users\annes\OneDrive\Desktop\BachelorYear\SamfatWork\TP March\auth-server-tp2\server\src\main\java\com\example\auth\entity\User.java
+C:\Users\annes\OneDrive\Desktop\BachelorYear\SamfatWork\TP March\auth-server-tp2\server\src\main\java\com\example\auth\exception\AuthenticationFailedException.java
+C:\Users\annes\OneDrive\Desktop\BachelorYear\SamfatWork\TP March\auth-server-tp2\server\src\main\java\com\example\auth\exception\GlobalExceptionHandler.java
+C:\Users\annes\OneDrive\Desktop\BachelorYear\SamfatWork\TP March\auth-server-tp2\server\src\main\java\com\example\auth\exception\InvalidInputException.java
+C:\Users\annes\OneDrive\Desktop\BachelorYear\SamfatWork\TP March\auth-server-tp2\server\src\main\java\com\example\auth\exception\ResourceConflictException.java
+C:\Users\annes\OneDrive\Desktop\BachelorYear\SamfatWork\TP March\auth-server-tp2\server\src\main\java\com\example\auth\repository\UserRepository.java
+C:\Users\annes\OneDrive\Desktop\BachelorYear\SamfatWork\TP March\auth-server-tp2\server\src\main\java\com\example\auth\service\AuthService.java
+C:\Users\annes\OneDrive\Desktop\BachelorYear\SamfatWork\TP March\auth-server-tp2\server\src\main\java\com\example\auth\validator\PasswordPolicyValidator.java

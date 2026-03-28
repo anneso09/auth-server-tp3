@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">auth</a> &gt; <a href="index.source.html" class="el_package">com.example.auth.controller</a> &gt; <span class="el_source">AuthController.java</span></div><h1>AuthController.java</h1><pre class="source lang-java linenums">package com.example.auth.controller;
+
+import com.example.auth.service.AuthService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import com.example.auth.exception.AuthenticationFailedException;
+
+/**
+ * Controller REST gérant les endpoints d'authentification.
+ * ATTENTION : Cette implémentation est volontairement dangereuse
+ * et ne doit jamais être utilisée en production.
+ */
+@RestController
+@RequestMapping(&quot;/api/auth&quot;)
+public class AuthController {
+
+    private final AuthService authService;
+
+<span class="fc" id="L19">    public AuthController(AuthService authService) {</span>
+<span class="fc" id="L20">        this.authService = authService;</span>
+<span class="fc" id="L21">    }</span>
+
+    /**
+     * Inscrit un nouvel utilisateur.
+     * @param email l'email de l'utilisateur
+     * @param password le mot de passe en clair
+     * @return message de succès
+     */
+    @PostMapping(&quot;/register&quot;)
+    public ResponseEntity&lt;String&gt; register(@RequestParam String email,
+                                           @RequestParam String password) {
+<span class="nc" id="L32">        authService.register(email, password);</span>
+<span class="nc" id="L33">        return ResponseEntity.ok(&quot;Utilisateur enregistré avec succès&quot;);</span>
+    }
+
+    /**
+     * Connecte un utilisateur existant.
+     * @param email l'email de l'utilisateur
+     * @param password le mot de passe en clair
+     * @return message de succès
+     */
+    @PostMapping(&quot;/login&quot;)
+    public ResponseEntity&lt;String&gt; login(@RequestParam String email,
+                                        @RequestParam String password) {
+<span class="nc" id="L45">        String token = authService.login(email, password);</span>
+<span class="nc" id="L46">        return ResponseEntity.ok(&quot;Connexion réussie. Token: &quot; + token);</span>
+    }
+
+    /**
+     * Route protégée accessible uniquement si authentifié.
+     * @param token le token de l'utilisateur
+     * @return les infos de l'utilisateur
+     */
+    @GetMapping(&quot;/me&quot;)
+    public ResponseEntity&lt;String&gt; me(@RequestParam String token) {
+<span class="nc" id="L56">        return authService.getUserByToken(token)</span>
+<span class="nc" id="L57">                .map(user -&gt; ResponseEntity.ok(&quot;Utilisateur connecté : &quot; + user.getEmail()))</span>
+<span class="nc" id="L58">                .orElseThrow(() -&gt; new AuthenticationFailedException(&quot;Token invalide&quot;));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

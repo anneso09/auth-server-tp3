@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">auth</a> &gt; <a href="index.source.html" class="el_package">com.example.auth.service</a> &gt; <span class="el_source">AuthService.java</span></div><h1>AuthService.java</h1><pre class="source lang-java linenums">package com.example.auth.service;
+
+import com.example.auth.entity.User;
+import com.example.auth.exception.AuthenticationFailedException;
+import com.example.auth.exception.InvalidInputException;
+import com.example.auth.exception.ResourceConflictException;
+import com.example.auth.repository.UserRepository;
+import com.example.auth.validator.PasswordPolicyValidator;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+/**
+ * Service principal d'authentification.
+ * TP2 : améliore le stockage avec BCrypt mais ne protège pas encore contre le rejeu.
+ */
+@Service
+public class AuthService {
+
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+<span class="fc" id="L24">    private final PasswordPolicyValidator passwordPolicyValidator = new PasswordPolicyValidator();</span>
+
+<span class="fc" id="L26">    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {</span>
+<span class="fc" id="L27">        this.userRepository = userRepository;</span>
+<span class="fc" id="L28">        this.passwordEncoder = passwordEncoder;</span>
+<span class="fc" id="L29">    }</span>
+
+    /**
+     * Inscrit un nouvel utilisateur.
+     */
+    public void register(String email, String password) {
+        // Validation email
+<span class="pc bpc" id="L36" title="1 of 4 branches missed.">        if (email == null || email.isEmpty()) {</span>
+<span class="fc" id="L37">            throw new InvalidInputException(&quot;L'email ne peut pas être vide.&quot;);</span>
+        }
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        if (!email.matches(&quot;^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$&quot;)) {</span>
+<span class="fc" id="L40">            throw new InvalidInputException(&quot;Format d'email invalide.&quot;);</span>
+        }
+
+        // Validation politique mot de passe
+<span class="fc" id="L44">        String policyError = passwordPolicyValidator.getErrorMessage(password);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (policyError != null) {</span>
+<span class="fc" id="L46">            throw new InvalidInputException(policyError);</span>
+        }
+
+        // Email unique
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (userRepository.findByEmail(email).isPresent()) {</span>
+<span class="fc" id="L51">            throw new ResourceConflictException(&quot;Email déjà utilisé.&quot;);</span>
+        }
+
+        // Hacher le mot de passe
+<span class="fc" id="L55">        String hash = passwordEncoder.encode(password);</span>
+<span class="fc" id="L56">        User user = new User(email, hash);</span>
+<span class="fc" id="L57">        userRepository.save(user);</span>
+<span class="fc" id="L58">    }</span>
+
+    /**
+     * Connecte un utilisateur existant.
+     */
+    /**
+     * Connecte un utilisateur existant.
+     * Anti brute-force : 5 échecs consécutifs bloquent le compte 2 minutes.
+     */
+    public String login(String email, String password) {
+<span class="fc" id="L68">        User user = userRepository.findByEmail(email)</span>
+<span class="fc" id="L69">                .orElseThrow(() -&gt; new AuthenticationFailedException(&quot;Email ou mot de passe incorrect.&quot;));</span>
+
+        // Vérifier si le compte est bloqué
+<span class="pc bpc" id="L72" title="3 of 4 branches missed.">        if (user.getLockUntil() != null &amp;&amp; user.getLockUntil().isAfter(LocalDateTime.now())) {</span>
+<span class="nc" id="L73">            throw new AuthenticationFailedException(&quot;Compte temporairement bloqué. Réessayez dans 2 minutes.&quot;);</span>
+        }
+
+        // Vérifier le mot de passe
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        if (!passwordEncoder.matches(password, user.getPasswordHash())) {</span>
+            // Incrémenter les échecs
+<span class="fc" id="L79">            user.setFailedAttempts(user.getFailedAttempts() + 1);</span>
+
+            // Bloquer si 5 échecs
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">            if (user.getFailedAttempts() &gt;= 5) {</span>
+<span class="nc" id="L83">                user.setLockUntil(LocalDateTime.now().plusMinutes(2));</span>
+<span class="nc" id="L84">                userRepository.save(user);</span>
+<span class="nc" id="L85">                throw new AuthenticationFailedException(&quot;Compte temporairement bloqué. Réessayez dans 2 minutes.&quot;);</span>
+            }
+
+<span class="fc" id="L88">            userRepository.save(user);</span>
+<span class="fc" id="L89">            throw new AuthenticationFailedException(&quot;Email ou mot de passe incorrect.&quot;);</span>
+        }
+
+        // Login OK : réinitialiser les compteurs
+<span class="fc" id="L93">        user.setFailedAttempts(0);</span>
+<span class="fc" id="L94">        user.setLockUntil(null);</span>
+
+        // Générer un token
+<span class="fc" id="L97">        String token = UUID.randomUUID().toString();</span>
+<span class="fc" id="L98">        user.setToken(token);</span>
+<span class="fc" id="L99">        userRepository.save(user);</span>
+
+<span class="fc" id="L101">        return token;</span>
+    }
+
+    /**
+     * Récupère un utilisateur par son token.
+     */
+    public java.util.Optional&lt;User&gt; getUserByToken(String token) {
+<span class="fc" id="L108">        return userRepository.findByToken(token);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
