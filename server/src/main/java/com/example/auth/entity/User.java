@@ -5,9 +5,9 @@ import java.time.LocalDateTime;
 
 /**
  * Entité représentant un utilisateur en base de données.
- * TP2 : le mot de passe est maintenant stocké sous forme de hash BCrypt.
- * Cette implémentation reste fragile car le mot de passe circule encore
- * lors du login (corrigé en TP3).
+ * TP3 : le mot de passe est stocké en clair pour permettre le recalcul HMAC côté serveur.
+ * Cette implémentation est volontairement simplifiée à des fins pédagogiques.
+ * Le chiffrement AES sera ajouté au TP4.
  */
 @Entity
 @Table(name = "users")
@@ -20,8 +20,8 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password_hash", nullable = false)
-    private String passwordHash;
+    @Column(name = "password", nullable = false)
+    private String password;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -34,23 +34,21 @@ public class User {
 
     private String token;
 
-    // Constructeurs
     public User() {}
 
-    public User(String email, String passwordHash) {
+    public User(String email, String password) {
         this.email = email;
-        this.passwordHash = passwordHash;  // corrigé
+        this.password = password;
         this.createdAt = LocalDateTime.now();
     }
 
-    // Getters & Setters
     public Long getId() { return id; }
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public String getPasswordHash() { return passwordHash; }        // corrigé
-    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }  // corrigé
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
